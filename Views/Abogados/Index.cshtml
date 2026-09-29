@@ -1,0 +1,29 @@
+@model IEnumerable<CACET.Models.Abogado>
+@{ ViewData["Title"] = "Abogados"; }
+<div class="page-header">
+    <div class="page-header-title">
+        <h1>Abogados</h1>
+        <p>Listado de abogados registrados</p>
+    </div>
+</div>
+<div class="table-card">
+    <div class="table-responsive">
+        <table class="casos-table">
+            <thead>
+                <tr>
+                    <th>ID Abogado</th>
+                    <th>Siglas</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(!Model.Any()){ <tr><td colspan='2' class='text-center'>No hay registros</td></tr> }
+                @foreach(var item in Model) {
+                    <tr>
+                        <td>#@item.AbogadoId</td>
+                        <td><span class="badge bg-primary text-white">@item.Siglas</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

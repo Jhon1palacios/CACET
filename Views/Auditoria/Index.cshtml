@@ -1,0 +1,133 @@
+﻿@model IEnumerable<CACET.Models.Auditoria>
+
+@{
+    ViewData["Title"] = "AuditorÃ­a del Sistema";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="m-0 font-weight-bold" style="color: var(--secondary-color);">Registro de AuditorÃ­a</h4>
+</div>
+
+<div class="card shadow-sm border-0 mb-4" style="border-radius: 12px; overflow: hidden;">
+    <div class="card-body p-4 bg-light">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label text-muted small fw-bold">TABLA</label>
+                <input type="text" name="tabla" value="@ViewBag.Tabla" class="form-control" placeholder="Ej: CasosJudiciales" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label text-muted small fw-bold">ACCIÃ“N</label>
+                <select name="accion" class="form-select" onchange="this.form.submit()">
+                    <option value="">Todas</option>
+                    <option value="CREAR" selected="@(ViewBag.Accion == "CREAR")">CREAR</option>
+                    <option value="ACTUALIZAR" selected="@(ViewBag.Accion == "ACTUALIZAR")">ACTUALIZAR</option>
+                    <option value="ELIMINAR" selected="@(ViewBag.Accion == "ELIMINAR")">ELIMINAR</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-muted small fw-bold">FECHA INICIO</label>
+                <input type="date" name="fechaInicio" value="@ViewBag.FechaInicio" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-muted small fw-bold">FECHA FIN</label>
+                <input type="date" name="fechaFin" value="@ViewBag.FechaFin" class="form-control" />
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100" style="background-color: var(--primary-color); border: none;">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead style="background-color: #f8f9fc;">
+                <tr>
+                    <th class="text-muted small fw-bold py-3 px-4">FECHA Y HORA</th>
+                    <th class="text-muted small fw-bold py-3">USUARIO</th>
+                    <th class="text-muted small fw-bold py-3">TABLA</th>
+                    <th class="text-muted small fw-bold py-3">ID REG.</th>
+                    <th class="text-muted small fw-bold py-3 text-center">ACCIÃ“N</th>
+                    <th class="text-muted small fw-bold py-3">DETALLES</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-shield-check fs-1 d-block mb-3" style="color: #cbd5e1;"></i>
+                            No se encontraron registros de auditorÃ­a que coincidan con la bÃºsqueda.
+                        </td>
+                    </tr>
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="px-4">@item.FechaHora.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        <td><span class="badge bg-secondary text-white">@item.Usuario</span></td>
+                        <td class="fw-bold" style="color: var(--secondary-color);">@item.Tabla</td>
+                        <td>#@item.RegistroId</td>
+                        <td class="text-center">
+                            @if(item.Accion == "CREAR")
+                            {
+                                <span class="badge rounded-pill" style="background-color: #d1fae5; color: #065f46;">CREAR</span>
+                            }
+                            else if (item.Accion == "ACTUALIZAR")
+                            {
+                                <span class="badge rounded-pill" style="background-color: #fef3c7; color: #92400e;">ACTUALIZAR</span>
+                            }
+                            else if (item.Accion == "ELIMINAR")
+                            {
+                                <span class="badge rounded-pill" style="background-color: #fee2e2; color: #b91c1c;">ELIMINAR</span>
+                            }
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalAudit-@item.Id">
+                                <i class="bi bi-eye"></i> Ver Cambios
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="modalAudit-@item.Id" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content border-0 shadow" style="border-radius: 12px;">
+                                        <div class="modal-header border-bottom-0 pb-0">
+                                            <h5 class="modal-title fw-bold" style="color: var(--secondary-color);">Detalles del Cambio (#@item.RegistroId)</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body p-4">
+                                            <div class="row">
+                                                @if (!string.IsNullOrEmpty(item.ValoresAntiguos))
+                                                {
+                                                    <div class="col-md-6 mb-3">
+                                                        <h6 class="fw-bold text-danger"><i class="bi bi-dash-circle"></i> Valores Antiguos</h6>
+                                                        <div class="p-3 bg-light rounded" style="font-family: monospace; font-size: 0.85rem; max-height: 300px; overflow-y: auto;">
+                                                            @item.ValoresAntiguos
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (!string.IsNullOrEmpty(item.ValoresNuevos))
+                                                {
+                                                    <div class="col-md-6 mb-3">
+                                                        <h6 class="fw-bold text-success"><i class="bi bi-plus-circle"></i> Valores Nuevos</h6>
+                                                        <div class="p-3 bg-light rounded" style="font-family: monospace; font-size: 0.85rem; max-height: 300px; overflow-y: auto;">
+                                                            @item.ValoresNuevos
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

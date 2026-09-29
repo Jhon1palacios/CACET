@@ -1,0 +1,29 @@
+@model IEnumerable<CACET.Models.Socio>
+@{ ViewData["Title"] = "Clientes / Socios"; }
+<div class="page-header">
+    <div class="page-header-title">
+        <h1>Clientes / Socios</h1>
+        <p>Listado de clientes registrados en el sistema</p>
+    </div>
+</div>
+<div class="table-card">
+    <div class="table-responsive">
+        <table class="casos-table">
+            <thead>
+                <tr>
+                    <th>ID Socio</th>
+                    <th>Apellidos y Nombres</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(!Model.Any()){ <tr><td colspan='2' class='text-center'>No hay registros</td></tr> }
+                @foreach(var item in Model) {
+                    <tr>
+                        <td>#@item.SocioId</td>
+                        <td>@item.ApellidosNombres</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

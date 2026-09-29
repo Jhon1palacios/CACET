@@ -1,0 +1,91 @@
+﻿@model CACET.Models.CasoJudicial
+@{
+    string GetBadgeProceso(string tipo) => tipo?.ToUpper() switch {
+        "EJECUTIVO"  => "badge-proceso badge-ejecutivo",
+        "CONCURSAL"  => "badge-proceso badge-concursal",
+        "ORDINARIO"  => "badge-proceso badge-ordinario",
+        "MONITORIO"  => "badge-proceso badge-monitorio",
+        "VOLUNTARIO" => "badge-proceso badge-voluntario",
+        _ => "badge-proceso badge-voluntario"
+    };
+}
+<div class="row g-3" style="font-size:13px">
+    <div class="col-12">
+        <div style="background:var(--body-bg);border-radius:10px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+            <div>
+                <div style="font-size:18px;font-weight:800;color:var(--navy)">@Model.ApellidosNombres</div>
+                <div style="font-size:12px;color:var(--text-muted)">Socio N° @Model.NumeroSocio &nbsp;·&nbsp; ABG: <strong>@Model.AbogadoAsignado</strong></div>
+            </div>
+            <span class="@GetBadgeProceso(Model.TipoProceso)" style="font-size:13px;padding:6px 16px">@Model.TipoProceso</span>
+        </div>
+    </div>
+
+    <!-- Datos financieros -->
+    <div class="col-md-4">
+        <div style="background:var(--body-bg);border-radius:10px;padding:14px 16px">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);margin-bottom:4px">Monto del Pagaré</div>
+            <div style="font-size:20px;font-weight:800;color:var(--navy)">$@Model.MontoPagare.ToString("N2")</div>
+        </div>
+    </div>
+    @if (Model.MandamientoEjecucion.HasValue)
+    {
+        <div class="col-md-4">
+            <div style="background:var(--body-bg);border-radius:10px;padding:14px 16px">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);margin-bottom:4px">Mandamiento de Ejecución</div>
+                <div style="font-size:20px;font-weight:800;color:var(--navy)">$@Model.MandamientoEjecucion.Value.ToString("N2")</div>
+            </div>
+        </div>
+    }
+    <div class="col-md-4">
+        <div style="background:var(--body-bg);border-radius:10px;padding:14px 16px">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);margin-bottom:4px">N° Pagaré</div>
+            <div style="font-size:14px;font-weight:600;font-family:monospace;color:var(--navy)">@Model.NumeroPagare</div>
+        </div>
+    </div>
+
+    <!-- Datos procesales -->
+    <div class="col-12">
+        <table style="width:100%;font-size:13px;border-collapse:collapse">
+            <tr style="border-bottom:1px solid rgba(0,0,0,0.05)">
+                <td style="padding:10px 0;color:var(--text-muted);font-weight:600;width:35%">N° Proceso Judicial</td>
+                <td style="padding:10px 0;font-family:monospace;color:var(--navy);font-weight:700">@Model.NumeroProceso</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(0,0,0,0.05)">
+                <td style="padding:10px 0;color:var(--text-muted);font-weight:600">Resolución</td>
+                <td style="padding:10px 0"><span class="badge-resolucion">@Model.Resolucion</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(0,0,0,0.05)">
+                <td style="padding:10px 0;color:var(--text-muted);font-weight:600">Medida Cautelar</td>
+                <td style="padding:10px 0">@(Model.MedidaCautelar ?? "NINGUNA")</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(0,0,0,0.05)">
+                <td style="padding:10px 0;color:var(--text-muted);font-weight:600">Fecha Calificación</td>
+                <td style="padding:10px 0">@(Model.FechaCalificacion?.ToString("dd/MM/yyyy") ?? "—")</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(0,0,0,0.05)">
+                <td style="padding:10px 0;color:var(--text-muted);font-weight:600">Clasificación</td>
+                <td style="padding:10px 0">@Model.Clasificacion</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(0,0,0,0.05)">
+                <td style="padding:10px 0;color:var(--text-muted);font-weight:600">Último Movimiento</td>
+                <td style="padding:10px 0">@(Model.UltimoMovimiento ?? "—")</td>
+            </tr>
+            <tr>
+                <td style="padding:10px 0;color:var(--text-muted);font-weight:600">Fecha de Registro</td>
+                <td style="padding:10px 0">@Model.FechaRegistro.ToString("dd/MM/yyyy HH:mm")</td>
+            </tr>
+        </table>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ObservacionesDiligencia))
+    {
+        <div class="col-12">
+            <div style="background:rgba(99,102,241,0.06);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:14px 18px">
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--accent);margin-bottom:6px">
+                    <i class="bi bi-clipboard2-check me-1"></i>Siguiente Diligencia / Observaciones
+                </div>
+                <div style="color:var(--text-main);line-height:1.7">@Model.ObservacionesDiligencia</div>
+            </div>
+        </div>
+    }
+</div>

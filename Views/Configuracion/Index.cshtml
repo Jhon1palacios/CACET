@@ -1,0 +1,223 @@
+﻿@{ ViewData["Title"] = "Configuracion"; }
+
+<div class="page-header">
+    <div class="page-header-title">
+        <h1>Configuración</h1>
+        <p>Ajustes del sistema y preferencias</p>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; margin-top: 24px;">
+    <!-- Menú lateral de configuración -->
+    <div class="table-card" style="padding: 10px;">
+        <ul style="list-style: none; padding: 0; margin: 0;" id="configMenu">
+            <li style="margin-bottom: 5px;">
+                <a href="#" onclick="switchTab('firma', this)" class="config-tab-active" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: var(--radius-sm); text-decoration: none; color: var(--navy); background: rgba(13,42,74,0.08); font-weight: 600; font-size: 13px;">
+                    <i class="bi bi-building"></i> Detalles de la Firma
+                </a>
+            </li>
+            <li style="margin-bottom: 5px;">
+                <a href="#" onclick="switchTab('apariencia', this)" class="config-tab" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: var(--radius-sm); text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 13px;">
+                    <i class="bi bi-palette"></i> Apariencia
+                </a>
+            </li>
+            <li style="margin-bottom: 5px;">
+                <a href="#" onclick="switchTab('notificaciones', this)" class="config-tab" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: var(--radius-sm); text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 13px;">
+                    <i class="bi bi-bell"></i> Notificaciones
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="switchTab('seguridad', this)" class="config-tab" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: var(--radius-sm); text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 13px;">
+                    <i class="bi bi-shield-lock"></i> Seguridad
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Contenido del formulario: Detalles de la firma -->
+    <div class="table-card config-panel" id="panel-firma">
+        <div class="table-card-header">
+            <span class="table-card-title">Detalles de la Firma</span>
+        </div>
+        <div style="padding: 24px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div>
+                    <label class="form-label-custom">Nombre de la Firma / Sistema</label>
+                    <input type="text" class="form-control-custom" value="CACET Legal Management">
+                </div>
+                <div>
+                    <label class="form-label-custom">Correo Electrónico de Contacto</label>
+                    <input type="email" class="form-control-custom" value="admin@cacet.com">
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div>
+                    <label class="form-label-custom">Moneda Base</label>
+                    <select class="form-select-custom">
+                        <option>USD ($)</option>
+                        <option>EUR (€)</option>
+                        <option>MXN ($)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label-custom">Zona Horaria</label>
+                    <select class="form-select-custom">
+                        <option>(GMT-05:00) Bogota, Lima, Quito</option>
+                        <option>(GMT-06:00) Central America</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-bottom: 30px;">
+                <label class="form-label-custom">Formato de Casos (Prefijo)</label>
+                <input type="text" class="form-control-custom" value="17230-">
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Este prefijo se usará por defecto al crear nuevos casos.</div>
+            </div>
+            <div style="border-top: 1px solid rgba(0,0,0,0.06); padding-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn-outline-soft">Cancelar</button>
+                <button type="button" class="btn-primary-navy" onclick="saveSettings(this)">
+                    <i class="bi bi-save"></i> Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido del formulario: Apariencia -->
+    <div class="table-card config-panel" id="panel-apariencia" style="display: none;">
+        <div class="table-card-header">
+            <span class="table-card-title">Apariencia del Sistema</span>
+        </div>
+        <div style="padding: 24px;">
+            <div style="margin-bottom: 20px;">
+                <label class="form-label-custom">Tema Principal</label>
+                <select class="form-select-custom">
+                    <option>Corporate Navy (Predeterminado)</option>
+                    <option>Modo Claro Clásico</option>
+                    <option>Modo Oscuro</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 30px;">
+                <label class="form-label-custom">Densidad de la interfaz</label>
+                <select class="form-select-custom">
+                    <option>Compacta (Más filas en tablas)</option>
+                    <option selected>Estándar</option>
+                    <option>Holgada (Más espacio)</option>
+                </select>
+            </div>
+            <div style="border-top: 1px solid rgba(0,0,0,0.06); padding-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn-outline-soft">Cancelar</button>
+                <button type="button" class="btn-primary-navy" onclick="saveSettings(this)">
+                    <i class="bi bi-save"></i> Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido del formulario: Notificaciones -->
+    <div class="table-card config-panel" id="panel-notificaciones" style="display: none;">
+        <div class="table-card-header">
+            <span class="table-card-title">Ajustes de Notificaciones</span>
+        </div>
+        <div style="padding: 24px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
+                <div>
+                    <h6 style="margin-bottom: 2px; color: var(--navy); font-size: 14px; font-weight: 600;">Notificaciones por Correo</h6>
+                    <div style="font-size: 12px; color: var(--text-muted);">Recibir resumen de movimientos diarios al correo.</div>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" checked style="cursor: pointer; width: 40px; height: 20px;">
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
+                <div>
+                    <h6 style="margin-bottom: 2px; color: var(--navy); font-size: 14px; font-weight: 600;">Alertas de Audiencias</h6>
+                    <div style="font-size: 12px; color: var(--text-muted);">Notificar 24 horas antes de una audiencia programada.</div>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" checked style="cursor: pointer; width: 40px; height: 20px;">
+                </div>
+            </div>
+            <div style="border-top: 1px solid rgba(0,0,0,0.06); padding-top: 20px; display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button type="button" class="btn-outline-soft">Cancelar</button>
+                <button type="button" class="btn-primary-navy" onclick="saveSettings(this)">
+                    <i class="bi bi-save"></i> Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido del formulario: Seguridad -->
+    <div class="table-card config-panel" id="panel-seguridad" style="display: none;">
+        <div class="table-card-header">
+            <span class="table-card-title">Seguridad y Acceso</span>
+        </div>
+        <div style="padding: 24px;">
+            <div style="margin-bottom: 20px;">
+                <label class="form-label-custom">Autenticación de dos pasos (2FA)</label>
+                <select class="form-select-custom">
+                    <option>Desactivada</option>
+                    <option>Requerida para todos los administradores</option>
+                    <option>Requerida para todos los usuarios</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 30px;">
+                <label class="form-label-custom">Expiración de Sesión</label>
+                <select class="form-select-custom">
+                    <option>30 minutos de inactividad</option>
+                    <option>1 hora de inactividad</option>
+                    <option>24 horas</option>
+                </select>
+            </div>
+            <div style="border-top: 1px solid rgba(0,0,0,0.06); padding-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn-outline-soft">Cancelar</button>
+                <button type="button" class="btn-primary-navy" onclick="saveSettings(this)">
+                    <i class="bi bi-save"></i> Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function saveSettings(btn) {
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Guardando...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="bi bi-check-lg"></i> Guardado';
+                btn.style.background = '#22c55e';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 2000);
+            }, 1000);
+        }
+
+        function switchTab(panelId, element) {
+            event.preventDefault();
+            
+            // Ocultar todos los paneles
+            document.querySelectorAll('.config-panel').forEach(panel => {
+                panel.style.display = 'none';
+            });
+            
+            // Mostrar el panel seleccionado
+            document.getElementById('panel-' + panelId).style.display = 'block';
+            
+            // Restablecer estilos de las pestañas
+            document.querySelectorAll('#configMenu a').forEach(a => {
+                a.style.background = 'transparent';
+                a.style.color = 'var(--text-muted)';
+                a.style.fontWeight = '500';
+            });
+            
+            // Aplicar estilo activo a la pestaña seleccionada
+            element.style.background = 'rgba(13,42,74,0.08)';
+            element.style.color = 'var(--navy)';
+            element.style.fontWeight = '600';
+        }
+    </script>
+}

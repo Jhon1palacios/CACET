@@ -1,0 +1,304 @@
+﻿@model IEnumerable<CACET.Models.CasoJudicial>
+@{
+    ViewData["Title"] = "Procesos Judiciales";
+
+    // Clase CSS del badge de Tipo de Proceso: coincide con las clases ya definidas
+    // en site.css (badge-ejecutivo, badge-concursal, badge-ordinario, badge-monitorio, badge-voluntario)
+    string ClaseTipo(string tipo) => "badge-proceso badge-" + (tipo ?? "").ToLower();
+
+    // Clase CSS del badge de ClasificaciÃ³n (badge-activo, badge-finalizado, badge-acuerdo)
+    string ClaseClasificacion(string clasificacion) => clasificacion switch
+    {
+        "Procesos activos" => "badge-clasificacion badge-activo",
+        "Procesos finalizados" => "badge-clasificacion badge-finalizado",
+        "Acuerdos de pago" => "badge-clasificacion badge-acuerdo",
+        _ => "badge-clasificacion"
+    };
+
+    var lista = Model?.ToList() ?? new List<CACET.Models.CasoJudicial>();
+    var total = lista.Count;
+    var activos = lista.Count(c => c.Clasificacion == "Procesos activos");
+    var acuerdos = lista.Count(c => c.Clasificacion == "Acuerdos de pago");
+    var montoTotal = lista.Sum(c => c.MontoPagare);
+
+    var abogados = ViewBag.Abogados as List<string> ?? new List<string>();
+    bool usandoDemo = ViewBag.UsandoDemo is bool b && b;
+}
+
+<div class="page-header">
+    <div class="page-header-title">
+        <h1>
+            Procesos Judiciales
+            @if (usandoDemo)
+            {
+                <span class="badge-clasificacion badge-finalizado" style="font-size:10px;vertical-align:middle;margin-left:8px;">
+                    <i class="bi bi-plug-fill me-1"></i>Modo demo (sin conexiÃ³n a BD)
+                </span>
+            }
+        </h1>
+        <p>Listado y seguimiento de procesos ejecutivos, concursales y ordinarios</p>
+    </div>
+    <div class="page-header-actions">
+        <button class="btn-outline-soft" type="button" onclick="exportToExcel(this)"><i class="bi bi-file-earmark-spreadsheet"></i>Exportar</button>
+        <button class="btn-primary-navy" onclick="abrirModalCrear()">
+            <i class="bi bi-plus-lg"></i>Nuevo proceso
+        </button>
+    </div>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div class="kpi-icon navy"><i class="bi bi-folder2-open"></i></div>
+        <div>
+            <div class="kpi-value">@total</div>
+            <div class="kpi-label">Total de procesos</div>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon accent"><i class="bi bi-hourglass-split"></i></div>
+        <div>
+            <div class="kpi-value">@activos</div>
+            <div class="kpi-label">Procesos activos</div>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon green"><i class="bi bi-check2-circle"></i></div>
+        <div>
+            <div class="kpi-value">@acuerdos</div>
+            <div class="kpi-label">Acuerdos de pago</div>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon orange"><i class="bi bi-cash-stack"></i></div>
+        <div>
+            <div class="kpi-value" style="font-size:20px;">$@montoTotal.ToString("N2")</div>
+            <div class="kpi-label">Monto total en pagarÃ©s</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros -->
+<form method="get" asp-action="Index" class="filter-bar">
+    <div class="search-wrap">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" name="busqueda" value="@ViewBag.Busqueda" class="search-input" placeholder="Buscar por nombre, pagarÃ© o proceso..." />
+    </div>
+    <select name="abogado" class="filter-select" onchange="this.form.submit()">
+        <option value="">Todos los abogados</option>
+        @foreach (var abg in abogados)
+        {
+            <option value="@abg" selected="@(ViewBag.AbogadoFiltro == abg)">@abg</option>
+        }
+    </select>
+    <select name="tipoProceso" class="filter-select" onchange="this.form.submit()">
+        <option value="">Tipo de proceso</option>
+        <option value="EJECUTIVO" selected="@(ViewBag.TipoProcesoFiltro == "EJECUTIVO")">Ejecutivo</option>
+        <option value="CONCURSAL" selected="@(ViewBag.TipoProcesoFiltro == "CONCURSAL")">Concursal</option>
+        <option value="ORDINARIO" selected="@(ViewBag.TipoProcesoFiltro == "ORDINARIO")">Ordinario</option>
+        <option value="MONITORIO" selected="@(ViewBag.TipoProcesoFiltro == "MONITORIO")">Monitorio</option>
+        <option value="VOLUNTARIO" selected="@(ViewBag.TipoProcesoFiltro == "VOLUNTARIO")">Voluntario</option>
+    </select>
+    <select name="clasificacion" class="filter-select" onchange="this.form.submit()">
+        <option value="">ClasificaciÃ³n</option>
+        <option value="Procesos activos" selected="@(ViewBag.ClasificacionFiltro == "Procesos activos")">Procesos activos</option>
+        <option value="Procesos finalizados" selected="@(ViewBag.ClasificacionFiltro == "Procesos finalizados")">Procesos finalizados</option>
+        <option value="Acuerdos de pago" selected="@(ViewBag.ClasificacionFiltro == "Acuerdos de pago")">Acuerdos de pago</option>
+    </select>
+    <button type="submit" class="btn-outline-soft"><i class="bi bi-funnel"></i>Filtrar</button>
+</form>
+
+<!-- Tabla -->
+<div class="table-card">
+    <div class="table-card-header">
+        <span class="table-card-title">Listado de procesos</span>
+        <span class="table-card-count">@lista.Count resultado(s)</span>
+    </div>
+
+    @if (!lista.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <h5>No se encontraron procesos</h5>
+            <p>Ajusta los filtros o crea un nuevo proceso.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="casos-table">
+                <thead>
+                    <tr>
+                        <th>Abogado</th>
+                        <th>Cliente</th>
+                        <th>PagarÃ©</th>
+                        <th>Proceso</th>
+                        <th>Tipo</th>
+                        <th>ResoluciÃ³n</th>
+                        <th>ClasificaciÃ³n</th>
+                        <th>Ãšltimo movimiento</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var caso in lista)
+                {
+                    <tr>
+                        <td>
+                            <strong>@caso.AbogadoAsignado</strong>
+                            <div style="font-size:11px;color:var(--text-muted)">Socio @caso.NumeroSocio</div>
+                        </td>
+                        <td>@caso.ApellidosNombres</td>
+                        <td>
+                            @caso.NumeroPagare
+                            <div style="font-size:11px;color:var(--text-muted)">$@caso.MontoPagare.ToString("N2")</div>
+                        </td>
+                        <td style="font-size:12px;color:var(--text-muted)">@caso.NumeroProceso</td>
+                        <td><span class="@ClaseTipo(caso.TipoProceso)">@caso.TipoProceso</span></td>
+                        <td><span class="badge-resolucion">@caso.Resolucion</span></td>
+                        <td><span class="@ClaseClasificacion(caso.Clasificacion)">@caso.Clasificacion</span></td>
+                        <td style="font-size:12px;">@caso.UltimoMovimiento</td>
+                        <td>
+                            <div class="d-flex gap-1 justify-content-end">
+                                <button class="btn-icon-sm btn-view" title="Ver detalle" onclick="abrirModalDetalle(@caso.Id)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn-icon-sm btn-edit" title="Editar" onclick="abrirModalEditar(@caso.Id)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <form asp-action="Eliminar" asp-route-id="@caso.Id" method="post" style="display:inline"
+                                      onsubmit="return confirm('Â¿Eliminar este proceso judicial?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-icon-sm btn-delete" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- Tabla oculta para exportar a Excel -->
+<table id="fullDataToExport" style="display:none;">
+    <thead>
+        <tr>
+            <th>Abogado Asignado</th>
+            <th>No. Socio</th>
+            <th>Cliente (Apellidos y Nombres)</th>
+            <th>No. Pagaré</th>
+            <th>Monto Pagaré</th>
+            <th>No. Proceso</th>
+            <th>Tipo Proceso</th>
+            <th>Medida Cautelar</th>
+            <th>Resolución</th>
+            <th>Clasificación</th>
+            <th>Último Movimiento</th>
+            <th>Estado</th>
+            <th>Fecha Registro</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var caso in lista)
+        {
+            <tr>
+                <td>@caso.AbogadoAsignado</td>
+                <td>@caso.NumeroSocio</td>
+                <td>@caso.ApellidosNombres</td>
+                <td>@caso.NumeroPagare</td>
+                <td>@caso.MontoPagare</td>
+                <td>@caso.NumeroProceso</td>
+                <td>@caso.TipoProceso</td>
+                <td>@caso.MedidaCautelar</td>
+                <td>@caso.Resolucion</td>
+                <td>@caso.Clasificacion</td>
+                <td>@caso.UltimoMovimiento</td>
+                <td>@caso.Estado</td>
+                <td>@caso.FechaRegistro.ToString("yyyy-MM-dd")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal Detalle -->
+<div class="modal fade" id="modalDetalle" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-header-navy">
+                <h5 class="modal-title"><i class="bi bi-file-earmark-text me-2"></i>Detalle del proceso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="contenidoDetalle">
+                <div class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> Cargando...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Crear/Editar -->
+<div class="modal fade" id="modalForm" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-header-navy">
+                <h5 class="modal-title" id="tituloModalForm"><i class="bi bi-folder-plus me-2"></i>Nuevo proceso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="contenidoForm">
+                <div class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> Cargando...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const modalDetalle = new bootstrap.Modal(document.getElementById('modalDetalle'));
+    const modalForm = new bootstrap.Modal(document.getElementById('modalForm'));
+
+    async function abrirModalDetalle(id) {
+        modalDetalle.show();
+        const html = await (await fetch('/CasosJudiciales/Detalle/' + id)).text();
+        document.getElementById('contenidoDetalle').innerHTML = html;
+    }
+
+    async function abrirModalCrear() {
+        document.getElementById('tituloModalForm').innerHTML = '<i class="bi bi-folder-plus me-2"></i>Nuevo proceso';
+        modalForm.show();
+        const html = await (await fetch('/CasosJudiciales/Crear')).text();
+        document.getElementById('contenidoForm').innerHTML = html;
+    }
+
+    async function abrirModalEditar(id) {
+        document.getElementById('tituloModalForm').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar proceso';
+        modalForm.show();
+        const html = await (await fetch('/CasosJudiciales/Editar/' + id)).text();
+        document.getElementById('contenidoForm').innerHTML = html;
+    }
+
+    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        function exportToExcel(btn) {
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Generando...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                let table = document.getElementById("fullDataToExport");
+                let wb = XLSX.utils.table_to_book(table, {sheet: "Procesos_Judiciales"});
+                XLSX.writeFile(wb, 'Procesos_Judiciales.xlsx');
+
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }, 800);
+        }
+    </script>
+}
+
+
+
+

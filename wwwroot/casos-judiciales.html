@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema de Gestión de Casos Judiciales | CACET - SistemaLegal</title>
+
+  <!-- Google Fonts: Inter (300, 400, 500, 600, 700, 800) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- Bootstrap Icons v1.11.3 -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+  />
+
+  <style>
+    /* ==========================================================================
+       VARIABLES Y RESET CORPORATIVO PREMIUM
+       ========================================================================== */
+    :root {
+      --bg-app: #f0f2f5;
+      --text-main: #2b3440;
+      --color-navy: #0d2a4a;
+      --color-navy-hover: #07182b;
+      --color-accent: #6366f1;
+      --color-accent-hover: #4f46e5;
+
+      /* Gradientes Corporativos */
+      --gradient-navbar: linear-gradient(90deg, #0d2a4a 0%, #0a1b2f 100%);
+      --gradient-card: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      --gradient-modal: linear-gradient(135deg, #002b4f 0%, #005a98 100%);
+
+      /* Jerarquía de Colores para Tipo de Proceso (Tomate / Naranja degradado) */
+      --process-ejecutivo-bg: rgba(234, 88, 12, 0.14);
+      --process-ejecutivo-text: #c2410c;
+      --process-ejecutivo-border: #f97316;
+
+      --process-concursal-bg: rgba(245, 158, 11, 0.12);
+      --process-concursal-text: #b45309;
+      --process-concursal-border: #f59e0b;
+
+      --process-ordinario-bg: rgba(217, 119, 6, 0.08);
+      --process-ordinario-text: #92400e;
+      --process-ordinario-border: #fbbf24;
+
+      --sidebar-width: 275px;
+      --sidebar-collapsed-width: 84px;
+      --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ==========================================================================
+       TOP NAVBAR PREMIUM
+       ========================================================================== */
+    .top-navbar {
+      background: var(--gradient-navbar);
+      height: 72px;
+      position: sticky;
+      top: 0;
+      z-index: 1040;
+      box-shadow: 0 4px 20px rgba(7, 24, 43, 0.3);
+    }
+
+    .brand-logo {
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      font-size: 0.65rem;
+      letter-spacing: 0.8px;
+      font-weight: 700;
+      padding: 4px 9px;
+      background: rgba(99, 102, 241, 0.25);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #c7d2fe;
+    }
+
+    .btn-toggle-sidebar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-toggle-sidebar:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: scale(1.05);
+      color: #ffffff;
+    }
+
+    .nav-server-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-user-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      padding: 6px 14px 6px 6px;
+      transition: var(--transition-smooth);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-user-pill:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    .nav-icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    .notification-indicator {
+      position: absolute;
+      top: 9px;
+      right: 9px;
+      width: 9px;
+      height: 9px;
+      background-color: #ef4444;
+      border: 2px solid #0d2a4a;
+      border-radius: 50%;
+    }
+
+    /* ==========================================================================
+       SIDEBAR PREMIUM
+       ========================================================================== */
+    .app-layout {
+      display: flex;
+      min-height: calc(100vh - 72px);
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: #ffffff;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.03);
+      padding: 24px 16px;
+      transition: var(--transition-smooth);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: sticky;
+      top: 72px;
+      height: calc(100vh - 72px);
+      overflow-y: auto;
+    }
+
+    .sidebar.collapsed {
+      width: var(--sidebar-collapsed-width);
+      padding: 24px 10px;
+    }
+
+    .sidebar.collapsed .nav-text,
+    .sidebar.collapsed .sidebar-heading,
+    .sidebar.collapsed .badge-sidebar,
+    .sidebar.collapsed .sidebar-footer-info {
+      display: none !important;
+    }
+
+    .sidebar.collapsed .nav-link-custom {
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .sidebar-heading {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-bottom: 12px;
+      padding-left: 12px;
+    }
+
+    .nav-link-custom {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 16px;
+      border-radius: 12px;
+      color: #475569;
+      font-weight: 500;
+      font-size: 0.92rem;
+      text-decoration: none;
+      transition: var(--transition-smooth);
+      margin-bottom: 4px;
+      position: relative;
+    }
+
+    .nav-link-custom i {
+      font-size: 1.18rem;
+      color: #64748b;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-link-custom:hover {
+      background-color: #f1f5f9;
+      color: var(--color-navy);
+      transform: translateX(4px);
+    }
+
+    .nav-link-custom:hover i {
+      color: var(--color-navy);
+    }
+
+    .nav-link-custom.active {
+      background-color: rgba(13, 42, 74, 0.08);
+      color: var(--color-navy);
+      font-weight: 700;
+    }
+
+    .nav-link-custom.active i {
+      color: var(--color-navy);
+    }
+
+    .nav-link-custom.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 15%;
+      height: 70%;
+      width: 4px;
+      background: var(--color-navy);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .sidebar-footer-card {
+      background: var(--gradient-card);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      padding: 14px;
+      border-radius: 16px;
+    }
+
+    /* ==========================================================================
+       ÁREA PRINCIPAL DE CONTENIDO
+       ========================================================================== */
+    .main-wrapper {
+      flex-grow: 1;
+      padding: 32px 36px;
+      max-width: 1750px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .page-title {
+      color: var(--color-navy);
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+      color: #64748b;
+      font-size: 0.95rem;
+      font-weight: 400;
+      margin: 0;
+    }
+
+    /* Botones Estilo Píldora Corporativa */
+    .btn-navy {
+      background-color: var(--color-navy);
+      border-color: var(--color-navy);
+      color: #ffffff;
+      font-weight: 600;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-navy:hover {
+      background-color: var(--color-navy-hover);
+      border-color: var(--color-navy-hover);
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(13, 42, 74, 0.25);
+    }
+
+    .btn-accent {
+      background-color: var(--color-accent);
+      border-color: var(--color-accent);
+      color: #ffffff;
+      font-weight: 600;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-accent:hover {
+      background-color: var(--color-accent-hover);
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-outline-custom {
+      border: 1px solid #cbd5e1;
+      background-color: #ffffff;
+      color: #475569;
+      font-weight: 600;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-outline-custom:hover {
+      background-color: #f8fafc;
+      color: var(--color-navy);
+      border-color: #94a3b8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    /* ==========================================================================
+       TARJETAS DE KPIS Y ESTADÍSTICAS LEGALES
+       ========================================================================== */
+    .kpi-card {
+      background: var(--gradient-card);
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(13, 42, 74, 0.04);
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(13, 42, 74, 0.09);
+    }
+
+    .kpi-icon-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .kpi-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #64748b;
+      margin-bottom: 2px;
+    }
+
+    .kpi-value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--color-navy);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    /* Pestañas de Clasificación Sugerida */
+    .nav-pills-custom .nav-link {
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.92rem;
+      padding: 9px 20px;
+      border-radius: 50rem;
+      transition: var(--transition-smooth);
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    .nav-pills-custom .nav-link:hover {
+      color: var(--color-navy);
+      background: #f8fafc;
+      transform: translateY(-1px);
+    }
+
+    .nav-pills-custom .nav-link.active {
+      background-color: var(--color-navy);
+      color: #ffffff;
+      border-color: var(--color-navy);
+      box-shadow: 0 4px 14px rgba(13, 42, 74, 0.25);
+    }
+
+    /* ==========================================================================
+       PANEL DE BÚSQUEDA Y FILTROS INTEGRADOS
+       ========================================================================== */
+    .filter-card {
+      background: #ffffff;
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(13, 42, 74, 0.03);
+      padding: 20px 24px;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      flex-grow: 1;
+      max-width: 420px;
+      transition: max-width 0.35s ease;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      pointer-events: none;
+      font-size: 1rem;
+    }
+
+    .search-input-custom {
+      padding-left: 44px !important;
+      padding-right: 18px !important;
+      border: 1px solid #e2e8f0;
+      background-color: #f8fafc;
+      color: var(--text-main);
+      font-size: 0.92rem;
+      transition: width 0.35s ease, border-color 0.25s ease, background-color 0.25s ease;
+    }
+
+    .search-input-custom:focus {
+      background-color: #ffffff;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+    }
+
+    .select-custom {
+      border: 1px solid #e2e8f0;
+      background-color: #f8fafc;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: #334155;
+      padding-left: 16px;
+      padding-right: 36px;
+    }
+
+    .select-custom:focus {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    /* ==========================================================================
+       TABLA PRINCIPAL DE CASOS JUDICIALES
+       ========================================================================== */
+    .table-container-card {
+      background: #ffffff;
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(13, 42, 74, 0.04);
+      overflow: hidden;
+    }
+
+    .table-custom {
+      margin-bottom: 0;
+      vertical-align: middle;
+    }
+
+    .table-custom thead th {
+      background-color: #f8fafc;
+      color: #64748b;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      padding: 16px 18px;
+      border-bottom: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    .table-custom tbody tr {
+      transition: var(--transition-smooth);
+    }
+
+    .table-custom tbody tr:hover {
+      background-color: #f8fafc;
+      transform: translateY(-1px);
+    }
+
+    .table-custom tbody td {
+      padding: 16px 18px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.9rem;
+    }
+
+    /* Badge de Abogado */
+    .badge-abogado {
+      background: #ffffff;
+      border: 1.5px solid #0d2a4a;
+      color: #0d2a4a;
+      font-weight: 800;
+      font-size: 0.8rem;
+      padding: 5px 11px;
+      border-radius: 50rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(13, 42, 74, 0.08);
+      font-family: monospace, sans-serif;
+    }
+
+    /* Badge de Socio */
+    .badge-socio {
+      background: rgba(13, 42, 74, 0.06);
+      color: var(--color-navy);
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 4px 10px;
+      border-radius: 50rem;
+    }
+
+    /* Jerarquía de Tipos de Proceso (Tomate / Naranja Degradado) */
+    .badge-tipo-proceso {
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 6px 14px;
+      border-radius: 50rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* 1. Nivel más alto: EJECUTIVO (Tomate / Naranja Intenso) */
+    .badge-tipo-ejecutivo {
+      background-color: var(--process-ejecutivo-bg);
+      color: var(--process-ejecutivo-text);
+      border: 1px solid rgba(234, 88, 12, 0.3);
+    }
+
+    /* 2. Nivel intermedio: CONCURSAL (Naranja más simple / suave) */
+    .badge-tipo-concursal {
+      background-color: var(--process-concursal-bg);
+      color: var(--process-concursal-text);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    /* 3. Nivel base: ORDINARIO (Naranja sutil / Melocotón) */
+    .badge-tipo-ordinario {
+      background-color: var(--process-ordinario-bg);
+      color: var(--process-ordinario-text);
+      border: 1px solid rgba(217, 119, 6, 0.2);
+    }
+
+    /* Badges de Resolución */
+    .badge-resolucion-acuerdo {
+      background-color: rgba(34, 197, 94, 0.12);
+      color: #15803d;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 50rem;
+      font-size: 0.76rem;
+    }
+
+    .badge-resolucion-tramite {
+      background-color: rgba(99, 102, 241, 0.12);
+      color: #4338ca;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 50rem;
+      font-size: 0.76rem;
+    }
+
+    .badge-resolucion-sentencia {
+      background-color: rgba(239, 68, 68, 0.12);
+      color: #b91c1c;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 50rem;
+      font-size: 0.76rem;
+    }
+
+    .badge-cautelar {
+      background-color: #f1f5f9;
+      color: #334155;
+      font-weight: 600;
+      font-size: 0.76rem;
+      padding: 4px 10px;
+      border-radius: 50rem;
+      border: 1px solid #e2e8f0;
+      display: inline-block;
+    }
+
+    .badge-cautelar-alerta {
+      background-color: rgba(239, 68, 68, 0.08);
+      color: #b91c1c;
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    /* Resaltado de Montos */
+    .monto-pagare {
+      font-family: monospace, sans-serif;
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 0.95rem;
+    }
+
+    .monto-ejecucion {
+      font-family: monospace, sans-serif;
+      font-weight: 800;
+      color: #b91c1c;
+      font-size: 0.95rem;
+    }
+
+    /* Botones de Acción en Tabla */
+    .btn-action-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #64748b;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-action-icon:hover {
+      background-color: #f1f5f9;
+      color: var(--color-navy);
+      border-color: #cbd5e1;
+      transform: scale(1.1);
+    }
+
+    /* ==========================================================================
+       MODALES PREMIUM
+       ========================================================================== */
+    .modal-content-custom {
+      border: none !important;
+      border-radius: 18px !important;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(13, 42, 74, 0.25);
+    }
+
+    .modal-header-custom {
+      background: var(--gradient-modal);
+      color: #ffffff;
+      padding: 22px 28px;
+      border-bottom: none;
+    }
+
+    .modal-header-custom .btn-close {
+      filter: invert(1) grayscale(100%) brightness(200%);
+    }
+
+    .modal-body-custom {
+      padding: 28px;
+      background-color: #ffffff;
+    }
+
+    .modal-footer-custom {
+      background-color: #f8fafc;
+      border-top: 1px solid #f1f5f9;
+      padding: 18px 28px;
+    }
+
+    /* Animación de Entrada Suave para Dropdowns */
+    .dropdown-menu {
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 14px;
+      box-shadow: 0 10px 25px -5px rgba(13, 42, 74, 0.1);
+      padding: 8px;
+      animation: dropdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes dropdownFade {
+      from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .dropdown-item {
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: #475569;
+      transition: var(--transition-smooth);
+    }
+
+    .dropdown-item:hover {
+      background-color: #f1f5f9;
+      color: var(--color-navy);
+      transform: translateX(3px);
+    }
+
+    /* Responsividad */
+    @media (max-width: 991.98px) {
+      .sidebar {
+        position: fixed;
+        left: -275px;
+        z-index: 1030;
+      }
+      .sidebar.show {
+        left: 0;
+      }
+      .main-wrapper {
+        padding: 20px 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ========================================================================
+       TOP NAVBAR PREMIUM CORPORATIVO
+       ======================================================================== -->
+  <nav class="top-navbar d-flex align-items-center justify-content-between px-3 px-md-4">
+    <!-- Izquierda: Logo y Botón Colapso -->
+    <div class="d-flex align-items-center gap-3">
+      <button
+        class="btn-toggle-sidebar"
+        id="btnToggleSidebar"
+        type="button"
+        title="Colapsar menú"
+      >
+        <i class="bi bi-list fs-5"></i>
+      </button>
+
+      <a href="#" class="brand-logo">
+        <span class="d-flex align-items-center justify-content-center bg-white text-navy rounded-3 p-1" style="width: 34px; height: 34px;">
+          <i class="bi bi-briefcase text-primary fs-5" style="color: var(--color-navy) !important;"></i>
+        </span>
+        <span class="fw-bold">CACET</span>
+        <span class="brand-badge rounded-pill">SISTEMA LEGAL</span>
+      </a>
+    </div>
+
+    <!-- Centro: Conexión Activa a SQL Server (192.168.131.197 / SistemaLegal) -->
+    <div class="d-none d-lg-flex align-items-center gap-2 nav-server-pill rounded-pill shadow-sm">
+      <span class="spinner-grow spinner-grow-sm text-success" style="width: 8px; height: 8px;" role="status"></span>
+      <span class="fw-medium text-light">Servidor SQL: <strong class="text-white">192.168.131.197</strong> &bull; BD: <strong class="text-white">SistemaLegal</strong></span>
+    </div>
+
+    <!-- Derecha: Notificaciones de Audiencias y Perfil de Usuario -->
+    <div class="d-flex align-items-center gap-2 gap-md-3">
+      <!-- Notificaciones -->
+      <div class="dropdown">
+        <button
+          class="nav-icon-btn"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          title="Notificaciones de Procesos"
+        >
+          <i class="bi bi-bell"></i>
+          <span class="notification-indicator"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" style="width: 320px;">
+          <li class="px-3 py-2 fw-bold text-navy border-bottom small text-uppercase d-flex justify-content-between align-items-center">
+            <span>Diligencias Inmediatas</span>
+            <span class="badge bg-danger rounded-pill">2 Nuevas</span>
+          </li>
+          <li>
+            <a class="dropdown-item py-2" href="#">
+              <div class="d-flex gap-2">
+                <i class="bi bi-calendar-event text-danger mt-1"></i>
+                <div>
+                  <div class="fw-semibold small">Juicio #04333-2018-00617</div>
+                  <div class="text-muted" style="font-size: 0.75rem;">Audiencia de Conciliación registrada</div>
+                </div>
+              </div>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item py-2" href="#">
+              <div class="d-flex gap-2">
+                <i class="bi bi-file-earmark-check text-success mt-1"></i>
+                <div>
+                  <div class="fw-semibold small">Socio 68 - Rodríguez Sara</div>
+                  <div class="text-muted" style="font-size: 0.75rem;">Acuerdo de pago activo: $250.20/mes</div>
+                </div>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Perfil de Usuario Estilo Píldora -->
+      <div class="dropdown">
+        <a
+          class="nav-user-pill rounded-pill d-flex align-items-center gap-2"
+          href="#"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <div
+            class="avatar-sm rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+            style="background: linear-gradient(135deg, #6366f1, #3b82f6); width: 34px; height: 34px;"
+          >
+            RP
+          </div>
+          <div class="d-none d-sm-block text-start pe-1">
+            <div class="fw-semibold lh-1" style="font-size: 0.85rem;">Abg. R.P.</div>
+            <span class="text-white-50" style="font-size: 0.7rem;">Asesor Jurídico</span>
+          </div>
+          <i class="bi bi-chevron-down text-white-50 small ms-1"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+          <li class="px-3 py-1 text-muted small fw-semibold">Gestión Legal</li>
+          <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Mis Casos Asignados</a></li>
+          <li><a class="dropdown-item" href="#"><i class="bi bi-sliders me-2"></i>Parámetros Legales</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========================================================================
+       ESTRUCTURA DEL SISTEMA Y MENÚ LATERAL
+       ======================================================================== -->
+  <div class="app-layout">
+    <!-- Menú Lateral (Sidebar) -->
+    <aside class="sidebar" id="appSidebar">
+      <div>
+        <!-- Grupo 1: Litigios y Casos -->
+        <div class="sidebar-heading">Gestión Judicial</div>
+        <nav class="nav flex-column mb-3">
+          <a class="nav-link-custom active" href="#">
+            <i class="bi bi-folder2-open"></i>
+            <span class="nav-text flex-grow-1">Todos los Casos</span>
+            <span class="badge-sidebar badge bg-primary bg-opacity-10 text-primary rounded-pill px-2 py-1 small">142</span>
+          </a>
+          <a class="nav-link-custom" href="#">
+            <i class="bi bi-play-circle text-warning"></i>
+            <span class="nav-text flex-grow-1">Procesos Activos</span>
+            <span class="badge-sidebar badge bg-warning bg-opacity-10 text-warning rounded-pill px-2 py-1 small">38</span>
+          </a>
+          <a class="nav-link-custom" href="#">
+            <i class="bi bi-cash-coin text-success"></i>
+            <span class="nav-text flex-grow-1">Acuerdos de Pago</span>
+            <span class="badge-sidebar badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 small">26</span>
+          </a>
+          <a class="nav-link-custom" href="#">
+            <i class="bi bi-check2-circle text-secondary"></i>
+            <span class="nav-text">Procesos Finalizados</span>
+          </a>
+        </nav>
+
+        <!-- Grupo 2: Operaciones Legales -->
+        <div class="sidebar-heading">Operaciones Coactivas</div>
+        <nav class="nav flex-column mb-3">
+          <a class="nav-link-custom" href="#">
+            <i class="bi bi-shield-lock"></i>
+            <span class="nav-text">Medidas Cautelares</span>
+          </a>
+          <a class="nav-link-custom" href="#">
+            <i class="bi bi-file-earmark-ruled"></i>
+            <span class="nav-text">Mandamientos Ejecución</span>
+          </a>
+          <a class="nav-link-custom" href="#">
+            <i class="bi bi-calendar4-week"></i>
+            <span class="nav-text">Audiencias & Diligencias</span>
+          </a>
+        </nav>
+
+        <!-- Grupo 3: Parámetros y Consorcio -->
+        <div class="sidebar-heading">Consorcio & Configuración</div>
+        <nav class="nav flex-column">
+          <a class="nav-link-custom" href="#">
+            <i class="bi bi-people"></i>
+            <span class="nav-text">Abogados Asignados</span>
+          </a>
+          <a class="nav-link-custom" href="#">
+            <i class="bi bi-database-check"></i>
+            <span class="nav-text">Conexión SQL Server</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Tarjeta Inferior de Estado -->
+      <div class="sidebar-footer-card mt-4 sidebar-footer-info">
+        <div class="d-flex align-items-center justify-content-between mb-1">
+          <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 small fw-bold">ONLINE</span>
+          <small class="text-muted fw-bold">v2.0 MVC</small>
+        </div>
+        <div class="small fw-semibold text-navy">Base: SistemaLegal</div>
+        <p class="small text-muted mb-0 lh-sm" style="font-size: 0.76rem;">
+          Conexión remota activa a <span class="fw-semibold">192.168.131.197</span>.
+        </p>
+      </div>
+    </aside>
+
+    <!-- Área de Contenido Principal -->
+    <main class="main-wrapper">
+      <!-- 1. Cabecera de Página y Botones de Acción Rápida -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1 small">
+              <li class="breadcrumb-item"><a href="#" class="text-muted text-decoration-none">Inicio</a></li>
+              <li class="breadcrumb-item"><a href="#" class="text-muted text-decoration-none">Gestión Legal</a></li>
+              <li class="breadcrumb-item active text-navy fw-semibold" aria-current="page">Control de Juicios</li>
+            </ol>
+          </nav>
+          <h2 class="page-title">Gestión de Casos Judiciales & Cobranza</h2>
+          <p class="page-subtitle">Seguimiento automatizado de juicios ejecutivos, concursales, medidas cautelares y convenios de pago.</p>
+        </div>
+
+        <!-- Grupo de Botones de Acción -->
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <button class="btn btn-outline-custom rounded-pill shadow-sm px-3" type="button" title="Sincronizar con SQL Server">
+            <i class="bi bi-arrow-repeat me-1"></i> Sincronizar SQL
+          </button>
+          <button class="btn btn-outline-custom rounded-pill shadow-sm px-3" type="button" title="Exportar reporte en Excel">
+            <i class="bi bi-file-earmark-excel me-1 text-success"></i> Exportar Excel
+          </button>
+          <button
+            class="btn btn-navy rounded-pill shadow-sm px-4"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#modalNuevoCaso"
+          >
+            <i class="bi bi-plus-lg me-1"></i> Nuevo Caso Judicial
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Panel de KPIs / Estadísticas de Cobranza Legal -->
+      <div class="row g-3 mb-4">
+        <!-- KPI 1 -->
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="card kpi-card p-3 h-100">
+            <div class="d-flex align-items-center gap-3">
+              <div class="kpi-icon-circle bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-briefcase-fill" style="color: var(--color-navy);"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="kpi-title">Total Procesos</div>
+                <div class="kpi-value">142</div>
+                <small class="text-muted fw-semibold" style="font-size: 0.75rem;">
+                  <i class="bi bi-database me-1"></i> En SistemaLegal
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 2 -->
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="card kpi-card p-3 h-100">
+            <div class="d-flex align-items-center gap-3">
+              <div class="kpi-icon-circle" style="background-color: var(--process-ejecutivo-bg); color: var(--process-ejecutivo-text);">
+                <i class="bi bi-lightning-fill"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="kpi-title">Juicios Ejecutivos</div>
+                <div class="kpi-value">38</div>
+                <small class="text-danger fw-semibold" style="font-size: 0.75rem;">
+                  <i class="bi bi-exclamation-circle-fill"></i> Máxima Prioridad
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 3 -->
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="card kpi-card p-3 h-100">
+            <div class="d-flex align-items-center gap-3">
+              <div class="kpi-icon-circle" style="background-color: rgba(34, 197, 94, 0.1); color: #16a34a;">
+                <i class="bi bi-cash-stack"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="kpi-title">Acuerdos de Pago</div>
+                <div class="kpi-value">26</div>
+                <small class="text-success fw-semibold" style="font-size: 0.75rem;">
+                  <i class="bi bi-shield-check"></i> $248.500 USD en convenio
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 4 -->
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="card kpi-card p-3 h-100">
+            <div class="d-flex align-items-center gap-3">
+              <div class="kpi-icon-circle" style="background-color: rgba(99, 102, 241, 0.1); color: var(--color-accent);">
+                <i class="bi bi-people-fill"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="kpi-title">Abogados Activos</div>
+                <div class="kpi-value">11</div>
+                <small class="text-muted" style="font-size: 0.75rem;">Consorcio CACET</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Pestañas de Clasificación Sugerida (Procesos Activos, Finalizados, Acuerdos de Pago) -->
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3">
+        <ul class="nav nav-pills nav-pills-custom gap-2" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-todos" data-bs-toggle="pill" type="button">
+              <i class="bi bi-grid-fill me-1"></i> Todos los Casos
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-activos" data-bs-toggle="pill" type="button">
+              <i class="bi bi-hourglass-split me-1 text-warning"></i> Procesos Activos (38)
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-acuerdos" data-bs-toggle="pill" type="button">
+              <i class="bi bi-hand-thumbs-up-fill me-1 text-success"></i> Acuerdos de Pago (26)
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-finalizados" data-bs-toggle="pill" type="button">
+              <i class="bi bi-archive-fill me-1 text-secondary"></i> Procesos Finalizados (78)
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 4. Tarjeta de Filtros Avanzados y Buscador -->
+      <div class="filter-card mb-4 shadow-sm">
+        <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-3">
+          <!-- Buscador Píldora Expandible -->
+          <div class="search-input-wrapper">
+            <i class="bi bi-search search-icon"></i>
+            <input
+              type="text"
+              class="form-control rounded-pill search-input-custom shadow-sm"
+              id="inputBuscarCasos"
+              placeholder="Buscar por N° Socio, Apellidos, Pagaré o Juicio..."
+            />
+          </div>
+
+          <!-- Filtros de Parámetros -->
+          <div class="d-flex align-items-center gap-2 flex-wrap flex-grow-1 justify-content-xl-end">
+            <!-- Filtro Abogado Asignado (Lista oficial de iniciales) -->
+            <select class="form-select rounded-pill select-custom shadow-sm" style="max-width: 175px;">
+              <option selected value="">Abogado: Todos</option>
+              <option value="F.Z">F.Z</option>
+              <option value="G.O">G.O</option>
+              <option value="R.P">R.P</option>
+              <option value="J.O">J.O</option>
+              <option value="J.C.E">J.C.E</option>
+              <option value="A.H">A.H</option>
+              <option value="Y.T">Y.T</option>
+              <option value="T.P">T.P</option>
+              <option value="P.T">P.T</option>
+              <option value="G.Y">G.Y</option>
+              <option value="H.H">H.H</option>
+            </select>
+
+            <!-- Filtro Jerarquía Tipo de Proceso -->
+            <select class="form-select rounded-pill select-custom shadow-sm" style="max-width: 190px;">
+              <option selected value="">Tipo: Todos</option>
+              <option value="ejecutivo">Ejecutivo (Tomate)</option>
+              <option value="concursal">Concursal (Naranja suave)</option>
+              <option value="ordinario">Ordinario (Bajo)</option>
+            </select>
+
+            <!-- Filtro Medida Cautelar -->
+            <select class="form-select rounded-pill select-custom shadow-sm d-none d-md-block" style="max-width: 180px;">
+              <option selected value="">Medida Cautelar: Todas</option>
+              <option value="con_medida">Con Medida Activa</option>
+              <option value="prohibicion">Proh. Enaj. Garante</option>
+              <option value="retencion">Retención</option>
+              <option value="ninguna">Ninguna</option>
+            </select>
+
+            <!-- Filtro Resolución -->
+            <select class="form-select rounded-pill select-custom shadow-sm d-none d-lg-block" style="max-width: 165px;">
+              <option selected value="">Resolución: Todas</option>
+              <option value="acuerdo">Acuerdo</option>
+              <option value="sentencia">Sentencia</option>
+              <option value="tramite">En Trámite</option>
+            </select>
+
+            <!-- Botón Limpiar Filtros -->
+            <button class="btn btn-outline-secondary rounded-pill btn-sm px-3 shadow-sm" type="button" title="Restablecer">
+              <i class="bi bi-x-circle me-1"></i> Limpiar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Tabla Principal de Casos Judiciales -->
+      <div class="table-container-card shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-custom align-middle">
+            <thead>
+              <tr>
+                <th style="width: 70px;">Abg.</th>
+                <th style="width: 80px;">Socio</th>
+                <th>Apellidos y Nombres</th>
+                <th>Pagaré (N° / Monto)</th>
+                <th>Proceso Judicial & Jerarquía</th>
+                <th>Calificación</th>
+                <th>Medida Cautelar</th>
+                <th>Resolución</th>
+                <th>Mandamiento Ejecución</th>
+                <th>Último Movimiento & Diligencia</th>
+                <th class="text-end" style="width: 90px;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Fila 1: Basada exactamente en la fila 4 del Excel (RODRIGUEZ TAIMAL SARA MARLENE - EJECUTIVO) -->
+              <tr>
+                <td>
+                  <span class="badge-abogado" title="Abogado Asignado: R.P.">R.P.</span>
+                </td>
+                <td>
+                  <span class="badge-socio">#68</span>
+                </td>
+                <td>
+                  <div class="fw-bold text-navy">RODRIGUEZ TAIMAL SARA MARLENE</div>
+                  <div class="text-muted" style="font-size: 0.75rem;">
+                    <i class="bi bi-file-text me-1"></i> Demandado Principal &bull; Garante Activo
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-semibold text-dark">N° 228970</div>
+                  <div class="monto-pagare text-primary">$30.300,00 USD</div>
+                </td>
+                <td>
+                  <div class="fw-bold font-monospace small mb-1">04333-2018-00617</div>
+                  <!-- Jerarquía Más Alta: EJECUTIVO (Tomate / Naranja Intenso) -->
+                  <span class="badge-tipo-proceso badge-tipo-ejecutivo">
+                    <i class="bi bi-award-fill"></i> EJECUTIVO
+                  </span>
+                </td>
+                <td>
+                  <div class="small fw-semibold text-muted">
+                    <i class="bi bi-calendar3 me-1"></i> 23/08/2018
+                  </div>
+                </td>
+                <td>
+                  <span class="badge-cautelar badge-cautelar-alerta">
+                    <i class="bi bi-shield-fill-exclamation me-1"></i> PROH. ENAJ. GARANTE
+                  </span>
+                </td>
+                <td>
+                  <span class="badge-resolucion-acuerdo">
+                    <i class="bi bi-check-circle-fill me-1"></i> ACUERDO
+                  </span>
+                </td>
+                <td>
+                  <div class="monto-ejecucion">$57.045,24 USD</div>
+                  <small class="text-muted" style="font-size: 0.72rem;">Monto Ejecutable</small>
+                </td>
+                <td style="max-width: 290px;">
+                  <div class="small fw-bold text-navy mb-1">
+                    <i class="bi bi-clock-history text-primary me-1"></i> 18/02/2025: AUDIENCIA CONCILIACIÓN
+                  </div>
+                  <div class="text-muted lh-sm" style="font-size: 0.78rem;">
+                    Acuerdo por USD 57.045,24. Descuento mensual de <strong class="text-dark">USD 250,20</strong> desde marzo/2025.
+                  </div>
+                </td>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-1">
+                    <button class="btn-action-icon" type="button" title="Ver Expediente Completo">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn-action-icon" type="button" title="Registrar Diligencia / Movimiento">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 2: Basada exactamente en la fila 5 del Excel (RODRIGUEZ TAIMAL SARA MARLENE - CONCURSAL) -->
+              <tr>
+                <td>
+                  <span class="badge-abogado" title="Abogado Asignado: R.P.">R.P.</span>
+                </td>
+                <td>
+                  <span class="badge-socio">#68</span>
+                </td>
+                <td>
+                  <div class="fw-bold text-navy">RODRIGUEZ TAIMAL SARA MARLENE</div>
+                  <div class="text-muted" style="font-size: 0.75rem;">
+                    <i class="bi bi-diagram-3 me-1"></i> Proceso Conexo &bull; Juicio Colectivo
+                  </div>
+                </td>
+                <td>
+                  <span class="text-muted small italic">Acumulado en Ejecutivo</span>
+                </td>
+                <td>
+                  <div class="fw-bold font-monospace small mb-1">04333-2024-00200</div>
+                  <!-- Jerarquía Intermedia: CONCURSAL (Naranja más simple y suave) -->
+                  <span class="badge-tipo-proceso badge-tipo-concursal">
+                    <i class="bi bi-layers-half"></i> CONCURSAL
+                  </span>
+                </td>
+                <td>
+                  <div class="small fw-semibold text-muted">
+                    <i class="bi bi-calendar3 me-1"></i> 04/03/2024
+                  </div>
+                </td>
+                <td>
+                  <span class="badge-cautelar text-muted">
+                    <i class="bi bi-dash-circle me-1"></i> NINGUNA
+                  </span>
+                </td>
+                <td>
+                  <span class="badge-resolucion-acuerdo">
+                    <i class="bi bi-check-circle-fill me-1"></i> ACUERDO
+                  </span>
+                </td>
+                <td>
+                  <span class="text-muted small">Remitido a Ejecutivo</span>
+                </td>
+                <td style="max-width: 290px;">
+                  <div class="small fw-bold text-navy mb-1">
+                    <i class="bi bi-file-earmark-text text-warning me-1"></i> 20/02/2025: OFICIO ACUERDO PAGO
+                  </div>
+                  <div class="text-muted lh-sm" style="font-size: 0.78rem;">
+                    Oficio dando a conocer acuerdo de pago formalizado en el juicio ejecutivo principal.
+                  </div>
+                </td>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-1">
+                    <button class="btn-action-icon" type="button" title="Ver Expediente Completo">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn-action-icon" type="button" title="Registrar Diligencia / Movimiento">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 3: Caso Ejemplo 3 (Abogado F.Z - EJECUTIVO - Mandamiento con Medida Cautelar de Retención) -->
+              <tr>
+                <td>
+                  <span class="badge-abogado" title="Abogado Asignado: F.Z">F.Z</span>
+                </td>
+                <td>
+                  <span class="badge-socio">#114</span>
+                </td>
+                <td>
+                  <div class="fw-bold text-navy">HERRERA LÓPEZ CARLOS EDUARDO</div>
+                  <div class="text-muted" style="font-size: 0.75rem;">
+                    <i class="bi bi-file-text me-1"></i> Deudor Principal
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-semibold text-dark">N° 314050</div>
+                  <div class="monto-pagare text-primary">$18.500,00 USD</div>
+                </td>
+                <td>
+                  <div class="fw-bold font-monospace small mb-1">04333-2021-00890</div>
+                  <span class="badge-tipo-proceso badge-tipo-ejecutivo">
+                    <i class="bi bi-award-fill"></i> EJECUTIVO
+                  </span>
+                </td>
+                <td>
+                  <div class="small fw-semibold text-muted">
+                    <i class="bi bi-calendar3 me-1"></i> 15/06/2021
+                  </div>
+                </td>
+                <td>
+                  <span class="badge-cautelar badge-cautelar-alerta">
+                    <i class="bi bi-bank2 me-1"></i> RETENCIÓN CUENTAS
+                  </span>
+                </td>
+                <td>
+                  <span class="badge-resolucion-tramite">
+                    <i class="bi bi-hourglass-split me-1"></i> EN TRÁMITE
+                  </span>
+                </td>
+                <td>
+                  <div class="monto-ejecucion">$22.350,00 USD</div>
+                  <small class="text-muted" style="font-size: 0.72rem;">Monto Ejecutable</small>
+                </td>
+                <td style="max-width: 290px;">
+                  <div class="small fw-bold text-danger mb-1">
+                    <i class="bi bi-exclamation-octagon text-danger me-1"></i> 10/09/2026: LIQUIDACIÓN PERICIAL
+                  </div>
+                  <div class="text-muted lh-sm" style="font-size: 0.78rem;">
+                    Notificación de liquidación de capital e intereses legales. Plazo de objeción 3 días.
+                  </div>
+                </td>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-1">
+                    <button class="btn-action-icon" type="button" title="Ver Expediente Completo">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn-action-icon" type="button" title="Registrar Diligencia / Movimiento">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 4: Caso Ejemplo 4 (Abogado J.C.E - ORDINARIO - Sentencia Favorable) -->
+              <tr>
+                <td>
+                  <span class="badge-abogado" title="Abogado Asignado: J.C.E">J.C.E</span>
+                </td>
+                <td>
+                  <span class="badge-socio">#92</span>
+                </td>
+                <td>
+                  <div class="fw-bold text-navy">MENA BASTIDAS GLORIA PATRICIA</div>
+                  <div class="text-muted" style="font-size: 0.75rem;">
+                    <i class="bi bi-file-text me-1"></i> Obligación Solidaria
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-semibold text-dark">N° 198762</div>
+                  <div class="monto-pagare text-primary">$12.400,00 USD</div>
+                </td>
+                <td>
+                  <div class="fw-bold font-monospace small mb-1">04333-2022-00412</div>
+                  <!-- Nivel Base: ORDINARIO (Naranja sutil / Melocotón) -->
+                  <span class="badge-tipo-proceso badge-tipo-ordinario">
+                    <i class="bi bi-file-earmark-text"></i> ORDINARIO
+                  </span>
+                </td>
+                <td>
+                  <div class="small fw-semibold text-muted">
+                    <i class="bi bi-calendar3 me-1"></i> 11/11/2022
+                  </div>
+                </td>
+                <td>
+                  <span class="badge-cautelar badge-cautelar-alerta">
+                    <i class="bi bi-house-door me-1"></i> EMBARGO VEHÍCULO
+                  </span>
+                </td>
+                <td>
+                  <span class="badge-resolucion-sentencia">
+                    <i class="bi bi-gavel me-1"></i> SENTENCIA
+                  </span>
+                </td>
+                <td>
+                  <div class="monto-ejecucion">$16.200,00 USD</div>
+                  <small class="text-muted" style="font-size: 0.72rem;">Monto Ejecutable</small>
+                </td>
+                <td style="max-width: 290px;">
+                  <div class="small fw-bold text-navy mb-1">
+                    <i class="bi bi-check-circle text-success me-1"></i> 05/09/2026: SENTENCIA EJECUTORIADA
+                  </div>
+                  <div class="text-muted lh-sm" style="font-size: 0.78rem;">
+                    Juez emite orden de remate de bienes embargados para liquidar la obligación.
+                  </div>
+                </td>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-1">
+                    <button class="btn-action-icon" type="button" title="Ver Expediente Completo">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn-action-icon" type="button" title="Registrar Diligencia / Movimiento">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginador y Resumen de Registros -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center p-3 px-4 border-top gap-2">
+          <div class="small text-muted">
+            Mostrando <span class="fw-bold text-navy">1 - 4</span> de <span class="fw-bold text-navy">142</span> expedientes judiciales
+          </div>
+          <nav aria-label="Navegación de expedientes">
+            <ul class="pagination pagination-sm mb-0 gap-1">
+              <li class="page-item disabled">
+                <a class="page-link rounded-pill px-3" href="#" tabindex="-1">&laquo; Anterior</a>
+              </li>
+              <li class="page-item active">
+                <a class="page-link rounded-pill px-3" href="#" style="background-color: var(--color-navy); border-color: var(--color-navy);">1</a>
+              </li>
+              <li class="page-item"><a class="page-link rounded-pill px-3" href="#">2</a></li>
+              <li class="page-item"><a class="page-link rounded-pill px-3" href="#">3</a></li>
+              <li class="page-item"><a class="page-link rounded-pill px-3" href="#">4</a></li>
+              <li class="page-item">
+                <a class="page-link rounded-pill px-3" href="#">Siguiente &raquo;</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ========================================================================
+       MODAL DE NUEVO CASO JUDICIAL (PREMIUM)
+       ======================================================================== -->
+  <div
+    class="modal fade"
+    id="modalNuevoCaso"
+    tabindex="-1"
+    aria-labelledby="modalNuevoCasoLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content modal-content-custom">
+        <!-- Cabecera con Gradiente Navy -->
+        <div class="modal-header modal-header-custom">
+          <div class="d-flex align-items-center gap-2">
+            <div class="bg-white bg-opacity-20 p-2 rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+              <i class="bi bi-briefcase text-white fs-5"></i>
+            </div>
+            <div>
+              <h5 class="modal-title fw-bold text-white mb-0" id="modalNuevoCasoLabel">
+                Registrar Nuevo Expediente Judicial
+              </h5>
+              <small class="text-white-50">Sincronización directa con base de datos SistemaLegal (192.168.131.197)</small>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Cerrar"
+          ></button>
+        </div>
+
+        <!-- Formulario Completo de Datos Legales -->
+        <div class="modal-body modal-body-custom">
+          <form id="formNuevoCaso">
+            <div class="row g-3">
+              <!-- Sección 1: Datos del Socio y Abogado -->
+              <div class="col-12">
+                <h6 class="fw-bold text-navy border-bottom pb-2 mb-3">
+                  <i class="bi bi-person-lines-fill me-1 text-primary"></i> 1. Identificación del Demandado & Asignación
+                </h6>
+              </div>
+
+              <!-- Abogado Asignado -->
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold small text-muted">Abogado Asignado (ABG.) *</label>
+                <select class="form-select rounded-pill shadow-sm" required>
+                  <option selected value="">Seleccione abogado...</option>
+                  <option value="F.Z">F.Z - Asesor Jurídico</option>
+                  <option value="G.O">G.O - Asesor Jurídico</option>
+                  <option value="R.P">R.P - Asesor Jurídico</option>
+                  <option value="J.O">J.O - Asesor Jurídico</option>
+                  <option value="J.C.E">J.C.E - Asesor Jurídico</option>
+                  <option value="A.H">A.H - Asesor Jurídico</option>
+                  <option value="Y.T">Y.T - Asesor Jurídico</option>
+                  <option value="T.P">T.P - Asesor Jurídico</option>
+                  <option value="P.T">P.T - Asesor Jurídico</option>
+                  <option value="G.Y">G.Y - Asesor Jurídico</option>
+                  <option value="H.H">H.H - Asesor Jurídico</option>
+                </select>
+              </div>
+
+              <!-- N° Socio -->
+              <div class="col-12 col-md-3">
+                <label class="form-label fw-semibold small text-muted">Número de Socio *</label>
+                <div class="input-group shadow-sm rounded-pill overflow-hidden">
+                  <span class="input-group-text bg-light border-end-0"><i class="bi bi-hash text-muted"></i></span>
+                  <input
+                    type="number"
+                    class="form-control border-start-0 ps-0"
+                    placeholder="Ej. 68"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Apellidos y Nombres -->
+              <div class="col-12 col-md-5">
+                <label class="form-label fw-semibold small text-muted">Apellidos y Nombres Completos *</label>
+                <input
+                  type="text"
+                  class="form-control rounded-pill px-3 shadow-sm"
+                  placeholder="Ej. RODRIGUEZ TAIMAL SARA MARLENE"
+                  required
+                />
+              </div>
+
+              <!-- Sección 2: Obligación Financiera & Proceso Judicial -->
+              <div class="col-12 mt-4">
+                <h6 class="fw-bold text-navy border-bottom pb-2 mb-3">
+                  <i class="bi bi-journal-text me-1 text-primary"></i> 2. Detalle de Pagaré y Proceso Judicial
+                </h6>
+              </div>
+
+              <!-- Número del Pagaré -->
+              <div class="col-12 col-md-3">
+                <label class="form-label fw-semibold small text-muted">Número del Pagaré *</label>
+                <input
+                  type="text"
+                  class="form-control rounded-pill px-3 shadow-sm"
+                  placeholder="Ej. 228970"
+                  required
+                />
+              </div>
+
+              <!-- Monto del Pagaré -->
+              <div class="col-12 col-md-3">
+                <label class="form-label fw-semibold small text-muted">Monto del Pagaré (USD) *</label>
+                <div class="input-group shadow-sm rounded-pill overflow-hidden">
+                  <span class="input-group-text bg-light border-end-0">$</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    class="form-control border-start-0 ps-0"
+                    placeholder="30300.00"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Número de Proceso Judicial -->
+              <div class="col-12 col-md-3">
+                <label class="form-label fw-semibold small text-muted">N° Proceso Judicial *</label>
+                <input
+                  type="text"
+                  class="form-control rounded-pill px-3 shadow-sm font-monospace"
+                  placeholder="04333-2018-00617"
+                  required
+                />
+              </div>
+
+              <!-- Tipo de Proceso (Jerárquico) -->
+              <div class="col-12 col-md-3">
+                <label class="form-label fw-semibold small text-muted">Tipo de Proceso (Jerarquía) *</label>
+                <select class="form-select rounded-pill shadow-sm" required>
+                  <option value="EJECUTIVO" selected>EJECUTIVO (Nivel Alto - Tomate)</option>
+                  <option value="CONCURSAL">CONCURSAL (Nivel Medio - Naranja)</option>
+                  <option value="ORDINARIO">ORDINARIO (Nivel Base - Melocotón)</option>
+                </select>
+              </div>
+
+              <!-- Calificación de la Demanda -->
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold small text-muted">Fecha Calificación Demanda *</label>
+                <input
+                  type="date"
+                  class="form-control rounded-pill px-3 shadow-sm"
+                  required
+                />
+              </div>
+
+              <!-- Medida Cautelar -->
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold small text-muted">Medida Cautelar</label>
+                <select class="form-select rounded-pill shadow-sm">
+                  <option value="NINGUNA" selected>NINGUNA</option>
+                  <option value="PROH. ENAJ. GARANTE">PROH. ENAJ. GARANTE</option>
+                  <option value="RETENCIÓN DE CUENTAS">RETENCIÓN DE CUENTAS</option>
+                  <option value="EMBARGO DE BIENES">EMBARGO DE BIENES</option>
+                  <option value="PROHIBICIÓN DE SALIDA">PROHIBICIÓN DE SALIDA</option>
+                </select>
+              </div>
+
+              <!-- Resolución -->
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold small text-muted">Resolución Judicial</label>
+                <select class="form-select rounded-pill shadow-sm">
+                  <option value="EN TRÁMITE" selected>EN TRÁMITE</option>
+                  <option value="ACUERDO">ACUERDO DE PAGO</option>
+                  <option value="SENTENCIA">SENTENCIA FAVORABLE</option>
+                  <option value="ARCHIVO">ARCHIVO / CANCELADO</option>
+                </select>
+              </div>
+
+              <!-- Mandamiento de Ejecución -->
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold small text-muted">Mandamiento de Ejecución (USD)</label>
+                <div class="input-group shadow-sm rounded-pill overflow-hidden">
+                  <span class="input-group-text bg-light border-end-0">$</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    class="form-control border-start-0 ps-0"
+                    placeholder="57045.24"
+                  />
+                </div>
+              </div>
+
+              <!-- Último Movimiento / Diligencia -->
+              <div class="col-12 col-md-8">
+                <label class="form-label fw-semibold small text-muted">Último Movimiento Registrado</label>
+                <input
+                  type="text"
+                  class="form-control rounded-pill px-3 shadow-sm"
+                  placeholder="Ej. 18/02/2025 AUDIENCIA DE CONCILIACIÓN"
+                />
+              </div>
+
+              <!-- Observaciones / Siguiente Diligencia -->
+              <div class="col-12">
+                <label class="form-label fw-semibold small text-muted">Observaciones / Siguiente Diligencia a Realizar</label>
+                <textarea
+                  class="form-control shadow-sm"
+                  rows="3"
+                  style="border-radius: 14px;"
+                  placeholder="Ej. Acuerdo por la cantidad de USD 57.045,24. Descuento mensual de USD 250,20 mensuales desde marzo 2025 hasta cubrir el saldo..."
+                ></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Pie de Modal -->
+        <div class="modal-footer modal-footer-custom d-flex justify-content-between">
+          <button
+            type="button"
+            class="btn btn-outline-secondary rounded-pill px-4"
+            data-bs-dismiss="modal"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn btn-navy rounded-pill px-4 shadow-sm"
+            onclick="alert('¡Expediente judicial guardado exitosamente en SistemaLegal!');"
+            data-bs-dismiss="modal"
+          >
+            <i class="bi bi-save2 me-1"></i> Guardar Expediente en SQL
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3.3 Bundle con Popper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script Interactivo del Sidebar, Filtros y Búsqueda -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btnToggle = document.getElementById('btnToggleSidebar');
+      const sidebar = document.getElementById('appSidebar');
+      const searchInput = document.getElementById('inputBuscarCasos');
+
+      // Colapso dinámico del sidebar
+      if (btnToggle && sidebar) {
+        btnToggle.addEventListener('click', () => {
+          if (window.innerWidth >= 992) {
+            sidebar.classList.toggle('collapsed');
+          } else {
+            sidebar.classList.toggle('show');
+          }
+        });
+      }
+
+      // Microinteracción: Expansión suave del buscador al enfocar
+      if (searchInput) {
+        searchInput.addEventListener('focus', () => {
+          if (window.innerWidth >= 992) {
+            searchInput.parentElement.style.maxWidth = '520px';
+          }
+        });
+        searchInput.addEventListener('blur', () => {
+          if (window.innerWidth >= 992) {
+            searchInput.parentElement.style.maxWidth = '420px';
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

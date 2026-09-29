@@ -1,0 +1,31 @@
+@model IEnumerable<CACET.Models.Movimiento>
+@{ ViewData["Title"] = "Agenda / Diligencias"; }
+<div class="page-header">
+    <div class="page-header-title">
+        <h1>Agenda / Diligencias</h1>
+        <p>Listado de movimientos y diligencias programadas</p>
+    </div>
+</div>
+<div class="table-card">
+    <div class="table-responsive">
+        <table class="casos-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Proceso ID</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(!Model.Any()){ <tr><td colspan='3' class='text-center'>No hay registros</td></tr> }
+                @foreach(var item in Model) {
+                    <tr>
+                        <td>@(item.FechaMovimiento?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td>@item.ProcesoId</td>
+                        <td>@item.DescripcionMovimiento</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

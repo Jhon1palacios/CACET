@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CACET - Sistema de Gestion de Procesos Judiciales" />
+    <title>@ViewData["Title"] - CACET | Sistema Legal</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- TOP NAVBAR -->
+    <nav class="navbar-top d-flex align-items-center justify-content-between px-3 px-lg-4">
+        <!-- Left: Toggle + Brand -->
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn-toggle-sidebar" id="btnToggleSidebar" title="Colapsar menu">
+                <i class="bi bi-list fs-5"></i>
+            </button>
+            <a href="/" class="brand-logo d-flex align-items-center gap-2 text-decoration-none">
+                <div class="brand-icon">
+                    <i class="bi bi-balance-scale-right"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">CACET</span>
+                    <span class="brand-sub">Sistema Legal</span>
+                </div>
+            </a>
+        </div>
+        <!-- Right: actions -->
+        <div class="d-flex align-items-center gap-2 gap-lg-3">
+            <button class="nav-icon-btn position-relative" title="Notificaciones" id="btnNotificaciones" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNotificaciones" aria-controls="offcanvasNotificaciones">
+                <i class="bi bi-bell"></i>
+                <span class="nav-badge">3</span>
+            </button>
+            <button class="nav-icon-btn" title="Busqueda global" id="btnBusquedaGlobal" data-bs-toggle="modal" data-bs-target="#modalBusqueda">
+                <i class="bi bi-search"></i>
+            </button>
+            <div class="dropdown">
+                <button class="user-pill dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="userDropdown">
+                    <div class="user-avatar">JD</div>
+                    <span class="user-name d-none d-md-inline">Admin</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-premium" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-person-circle me-2"></i>Mi Perfil</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Configuracion</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesion</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Offcanvas Notificaciones -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNotificaciones" aria-labelledby="offcanvasNotificacionesLabel">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title" id="offcanvasNotificacionesLabel">
+                <i class="bi bi-bell me-2"></i>Notificaciones
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="list-group list-group-flush">
+                <a href="#" class="list-group-item list-group-item-action p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong class="mb-1 text-primary"><i class="bi bi-calendar-event me-1"></i>Nueva Audiencia</strong>
+                        <small class="text-muted">Hace 5 min</small>
+                    </div>
+                    <p class="mb-1 text-muted small">Se ha programado una nueva audiencia para el caso 2026-001.</p>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong class="mb-1 text-warning"><i class="bi bi-file-earmark-text me-1"></i>Documento Pendiente</strong>
+                        <small class="text-muted">Hace 2 horas</small>
+                    </div>
+                    <p class="mb-1 text-muted small">Falta la firma en el contrato de servicios legales.</p>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong class="mb-1 text-success"><i class="bi bi-check-circle me-1"></i>Caso Cerrado</strong>
+                        <small class="text-muted">Ayer</small>
+                    </div>
+                    <p class="mb-1 text-muted small">El caso 2025-104 ha sido resuelto a favor.</p>
+                </a>
+            </div>
+        </div>
+        <div class="offcanvas-footer p-3 border-top text-center bg-light">
+            <a href="#" class="text-decoration-none small fw-bold">Ver todas las notificaciones</a>
+        </div>
+    </div>
+
+    <!-- Modal Búsqueda Global -->
+    <div class="modal fade" id="modalBusqueda" tabindex="-1" aria-labelledby="modalBusquedaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-body p-4">
+                    <form action="/CasosJudiciales" method="get">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light border-end-0 text-muted" id="search-icon">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0 ps-0 shadow-none bg-light" placeholder="Buscar casos, clientes, abogados..." name="busqueda" aria-describedby="search-icon" autocomplete="off">
+                            <button class="btn btn-primary px-4" type="submit">Buscar</button>
+                        </div>
+                    </form>
+                    <div class="mt-3 text-muted small text-center">
+                        Presiona <kbd>Enter</kbd> para buscar o <kbd>Esc</kbd> para cerrar.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LAYOUT WRAPPER -->
+    <div class="layout-wrapper" id="layoutWrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-inner">
+                <div class="sidebar-section-label">MENU PRINCIPAL</div>
+                <nav class="sidebar-nav">
+                    <a href="/CasosJudiciales" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "CasosJudiciales" ? "active" : "")">
+                        <div class="sidebar-icon"><i class="bi bi-folder2-open"></i></div>
+                        <span>Procesos Judiciales</span>
+                    </a>
+                    <a href="/Clientes" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Clientes" ? "active" : "")">
+                        <div class="sidebar-icon"><i class="bi bi-people"></i></div>
+                        <span>Clientes / Socios</span>
+                    </a>
+                    <a href="/Abogados" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Abogados" ? "active" : "")">
+                        <div class="sidebar-icon"><i class="bi bi-person-badge"></i></div>
+                        <span>Abogados</span>
+                    </a>
+                    <a href="/Agenda" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Agenda" ? "active" : "")">
+                        <div class="sidebar-icon"><i class="bi bi-calendar-check"></i></div>
+                        <span>Agenda / Diligencias</span>
+                    </a>
+                </nav>
+                <div class="sidebar-section-label mt-4">REPORTES</div>
+                <nav class="sidebar-nav">
+                    <a href="/Reportes/Estadisticas" class="sidebar-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Estadisticas" ? "active" : "")">
+                        <div class="sidebar-icon"><i class="bi bi-bar-chart-line"></i></div>
+                        <span>Estadisticas</span>
+                    </a>
+                    <a href="/Reportes/ExportarExcel" class="sidebar-link @(ViewContext.RouteData.Values["action"]?.ToString() == "ExportarExcel" ? "active" : "")">
+                        <div class="sidebar-icon"><i class="bi bi-file-earmark-spreadsheet"></i></div>
+                        <span>Exportar Excel</span>
+                    </a>
+                </nav>
+                <div class="sidebar-section-label mt-4">SISTEMA</div>
+                <nav class="sidebar-nav">
+                    <a href="/Auditoria" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Auditoria" ? "active" : "")">
+                        <div class="sidebar-icon"><i class="bi bi-shield-check"></i></div>
+                        <span>Auditoría de Cambios</span>
+                    </a>
+                    <a href="/Configuracion" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Configuracion" ? "active" : "")">
+                        <div class="sidebar-icon"><i class="bi bi-gear"></i></div>
+                        <span>Configuracion</span>
+                    </a>
+                </nav>
+            </div>
+            <!-- DB Status -->
+            <div class="sidebar-footer">
+                <div class="db-status">
+                    <span class="db-dot"></span>
+                    <span class="db-label">192.168.131.197 · SistemaLegal</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content" id="mainContent">
+            @if (TempData["Exito"] != null)
+            {
+                <div class="alert-toast alert-toast-success" id="toastExito">
+                    <i class="bi bi-check-circle-fill me-2"></i>@TempData["Exito"]
+                    <button type="button" onclick="document.getElementById('toastExito').remove()" class="btn-close-toast">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            }
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Site JS -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Toggle sidebar
+        document.getElementById('btnToggleSidebar').addEventListener('click', function () {
+            document.getElementById('layoutWrapper').classList.toggle('sidebar-collapsed');
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        });
+        // Auto-hide toast
+        setTimeout(() => {
+            const t = document.getElementById('toastExito');
+            if (t) t.style.animation = 'slideOutRight 0.4s ease forwards';
+        }, 4000);
+
+        // Autofocus en Modal de Búsqueda
+        const modalBusqueda = document.getElementById('modalBusqueda');
+        if (modalBusqueda) {
+            modalBusqueda.addEventListener('shown.bs.modal', () => {
+                const input = modalBusqueda.querySelector('input');
+                if (input) input.focus();
+            });
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

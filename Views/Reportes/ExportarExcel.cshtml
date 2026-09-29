@@ -1,0 +1,129 @@
+﻿@model IEnumerable<CACET.Models.CasoJudicial>
+@{ ViewData["Title"] = "Exportar Excel"; }
+
+<div class="page-header">
+    <div class="page-header-title">
+        <h1>Exportar Excel</h1>
+        <p>Descarga de reportes de Casos Judiciales en formato XLSX</p>
+    </div>
+    <div class="page-header-actions">
+        <button class="btn-primary-navy" onclick="exportToExcel(this)">
+            <i class="bi bi-download"></i> Descargar Excel completo
+        </button>
+    </div>
+</div>
+
+<div class="table-card mt-4">
+    <div class="table-card-header">
+        <span class="table-card-title"><i class="bi bi-eye"></i> Vista Previa de Datos</span>
+        <span class="table-card-count">Mostrando primeros 50 registros</span>
+    </div>
+    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+        <table class="casos-table" id="previewTable">
+            <thead style="position: sticky; top: 0; z-index: 10;">
+                <tr>
+                    <th>Abogado</th>
+                    <th>Cliente</th>
+                    <th>Pagaré</th>
+                    <th>Proceso</th>
+                    <th>Tipo</th>
+                    <th>Clasificación</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var caso in Model.Take(50))
+                {
+                    <tr>
+                        <td>
+                            <strong>@caso.AbogadoAsignado</strong>
+                            <div style="font-size:11px;color:var(--text-muted)">Socio @caso.NumeroSocio</div>
+                        </td>
+                        <td>@caso.ApellidosNombres</td>
+                        <td>
+                            @caso.NumeroPagare
+                            <div style="font-size:11px;color:var(--text-muted)">$@caso.MontoPagare.ToString("N2")</div>
+                        </td>
+                        <td style="font-size:12px;color:var(--text-muted)">@caso.NumeroProceso</td>
+                        <td>
+                            @if (caso.TipoProceso == "EJECUTIVO") { <span class="badge-proceso badge-ejecutivo">EJECUTIVO</span> }
+                            else if (caso.TipoProceso == "CONCURSAL") { <span class="badge-proceso badge-concursal">CONCURSAL</span> }
+                            else if (caso.TipoProceso == "ORDINARIO") { <span class="badge-proceso badge-ordinario">ORDINARIO</span> }
+                            else if (caso.TipoProceso == "MONITORIO") { <span class="badge-proceso badge-monitorio">MONITORIO</span> }
+                            else { <span class="badge-proceso badge-voluntario">@caso.TipoProceso</span> }
+                        </td>
+                        <td>
+                            @if (caso.Clasificacion == "Procesos activos") { <span class="badge-clasificacion badge-activo">Activo</span> }
+                            else if (caso.Clasificacion == "Procesos finalizados") { <span class="badge-clasificacion badge-finalizado">Finalizado</span> }
+                            else { <span class="badge-clasificacion badge-acuerdo">@caso.Clasificacion</span> }
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">No hay datos disponibles para exportar</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <!-- Tabla completa oculta para la exportación -->
+        <table id="fullDataToExport" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Abogado</th>
+                    <th>No. Socio</th>
+                    <th>Cliente</th>
+                    <th>No. Pagaré</th>
+                    <th>Monto Pagaré</th>
+                    <th>No. Proceso</th>
+                    <th>Tipo Proceso</th>
+                    <th>Medida Cautelar</th>
+                    <th>Resolución</th>
+                    <th>Clasificación</th>
+                    <th>Fecha Registro</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var caso in Model)
+                {
+                    <tr>
+                        <td>@caso.AbogadoAsignado</td>
+                        <td>@caso.NumeroSocio</td>
+                        <td>@caso.ApellidosNombres</td>
+                        <td>@caso.NumeroPagare</td>
+                        <td>@caso.MontoPagare</td>
+                        <td>@caso.NumeroProceso</td>
+                        <td>@caso.TipoProceso</td>
+                        <td>@caso.MedidaCautelar</td>
+                        <td>@caso.Resolucion</td>
+                        <td>@caso.Clasificacion</td>
+                        <td>@caso.FechaRegistro.ToString("yyyy-MM-dd")</td>
+                        <td>@caso.Estado</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        function exportToExcel(btn) {
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Generando...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                // Export the full hidden table instead of just the preview
+                let table = document.getElementById("fullDataToExport");
+                let wb = XLSX.utils.table_to_book(table, {sheet: "Reporte_Casos"});
+                XLSX.writeFile(wb, 'Reporte_Casos.xlsx');
+
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }, 500);
+        }
+    </script>
+}

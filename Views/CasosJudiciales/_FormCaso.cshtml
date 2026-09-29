@@ -1,0 +1,120 @@
+﻿@model CACET.Models.CasoJudicial
+@{
+    bool esEdicion = Model.Id > 0;
+    string accion = esEdicion ? "Editar" : "Crear";
+    var tiposProceso = new[] { "EJECUTIVO","CONCURSAL","ORDINARIO","MONITORIO","VOLUNTARIO" };
+    var medidas = new[] { "NINGUNA","EMBARGO","RETENCIÓN","SECUESTRO","PROHIBICIÓN ENAJENAR","OTRA" };
+    var resoluciones = new[] { "EN TRAMITE","ACUERDO","SENTENCIA","ARCHIVO" };
+    var clasificaciones = new[] { "Procesos activos","Procesos finalizados","Acuerdos de pago" };
+}
+<form asp-action="@accion" asp-controller="CasosJudiciales" method="post" id="formCasoModal">
+    @Html.AntiForgeryToken()
+    @if (esEdicion) { <input type="hidden" asp-for="Id" /> }
+    <input type="hidden" asp-for="FechaRegistro" />
+
+    <div class="row g-3">
+        <!-- ABG + SOCIO -->
+        <div class="col-md-3">
+            <label class="form-label-custom">ABG. Asignado *</label>
+            <input asp-for="AbogadoAsignado" class="form-control-custom" placeholder="Ej. F.Z" maxlength="10" required />
+            <span asp-validation-for="AbogadoAsignado" class="text-danger" style="font-size:11px"></span>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label-custom">N° Socio *</label>
+            <input asp-for="NumeroSocio" type="number" class="form-control-custom" placeholder="12345" required />
+            <span asp-validation-for="NumeroSocio" class="text-danger" style="font-size:11px"></span>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label-custom">Apellidos y Nombres *</label>
+            <input asp-for="ApellidosNombres" class="form-control-custom" placeholder="APELLIDO APELLIDO, Nombre" required />
+            <span asp-validation-for="ApellidosNombres" class="text-danger" style="font-size:11px"></span>
+        </div>
+        <!-- PAGARE + MONTO -->
+        <div class="col-md-4">
+            <label class="form-label-custom">N° Pagaré *</label>
+            <input asp-for="NumeroPagare" class="form-control-custom" placeholder="PAG-2024-001" required />
+            <span asp-validation-for="NumeroPagare" class="text-danger" style="font-size:11px"></span>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label-custom">Monto del Pagaré *</label>
+            <input asp-for="MontoPagare" type="number" step="0.01" class="form-control-custom" placeholder="0.00" required />
+            <span asp-validation-for="MontoPagare" class="text-danger" style="font-size:11px"></span>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label-custom">Mandamiento de Ejecución</label>
+            <input asp-for="MandamientoEjecucion" type="number" step="0.01" class="form-control-custom" placeholder="0.00" />
+        </div>
+        <!-- PROCESO -->
+        <div class="col-md-5">
+            <label class="form-label-custom">N° Proceso Judicial *</label>
+            <input asp-for="NumeroProceso" class="form-control-custom" placeholder="04333-2024-00617" required />
+            <span asp-validation-for="NumeroProceso" class="text-danger" style="font-size:11px"></span>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label-custom">Tipo de Proceso *</label>
+            <select asp-for="TipoProceso" class="form-select-custom" required>
+                @foreach(var tp in tiposProceso) {
+                    <option value="@tp" selected="@(Model.TipoProceso == tp)">@tp</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label-custom">Fecha Calificación</label>
+            <input asp-for="FechaCalificacion" type="date" class="form-control-custom" />
+        </div>
+        <!-- MEDIDA + RESOLUCION + CLASIFICACION -->
+        <div class="col-md-4">
+            <label class="form-label-custom">Medida Cautelar</label>
+            <select asp-for="MedidaCautelar" class="form-select-custom">
+                @foreach(var m in medidas) {
+                    <option value="@m" selected="@(Model.MedidaCautelar == m)">@m</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label-custom">Resolución</label>
+            <select asp-for="Resolucion" class="form-select-custom">
+                @foreach(var r in resoluciones) {
+                    <option value="@r" selected="@(Model.Resolucion == r)">@r</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label-custom">Clasificación</label>
+            <select asp-for="Clasificacion" class="form-select-custom">
+                @foreach(var cl in clasificaciones) {
+                    <option value="@cl" selected="@(Model.Clasificacion == cl)">@cl</option>
+                }
+            </select>
+        </div>
+        <!-- ULTIMO MOVIMIENTO -->
+        <div class="col-12">
+            <label class="form-label-custom">Último Movimiento</label>
+            <input asp-for="UltimoMovimiento" class="form-control-custom" placeholder="Descripción del último movimiento procesal..." />
+        </div>
+        <!-- OBSERVACIONES -->
+        <div class="col-12">
+            <label class="form-label-custom">Observaciones / Siguiente Diligencia</label>
+            <textarea asp-for="ObservacionesDiligencia" class="form-control-custom" rows="3" placeholder="Descripción de la siguiente diligencia o acción requerida..."></textarea>
+        </div>
+        <!-- ESTADO -->
+        <div class="col-md-4">
+            <label class="form-label-custom">Estado</label>
+            <select asp-for="Estado" class="form-select-custom">
+                <option value="Activo" selected="@(Model.Estado == "Activo")">Activo</option>
+                <option value="Inactivo" selected="@(Model.Estado == "Inactivo")">Inactivo</option>
+                <option value="Archivado" selected="@(Model.Estado == "Archivado")">Archivado</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+        <button type="button" class="btn-outline-soft" data-bs-dismiss="modal">
+            <i class="bi bi-x-lg"></i> Cancelar
+        </button>
+        <button type="submit" class="btn-primary-navy">
+            <i class="bi bi-@(esEdicion ? "floppy" : "folder-plus")"></i>
+            @(esEdicion ? "Guardar Cambios" : "Crear Caso")
+        </button>
+    </div>
+</form>
